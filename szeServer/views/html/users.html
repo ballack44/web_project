@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<!-- the order is important! -->
+
+<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css">
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css.map">
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.min.css">
+<link rel="stylesheet" type="text/css" href="/bootstrap.css">
+<link rel="stylesheet" type="text/css" href="/bootstrap.css.map">
+<link rel="stylesheet" type="text/css" href="/bootstrap.min.css">
+
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables.css">
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables_themeroller.css">
+
+
+<script type="text/javascript" src="/jquery/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="/jquery.form/jquery.form.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrap.js"></script>
+<!--  <script type="text/javascript" src="/bootstrap/npm.js"></script>-->
+<script type="text/javascript" src="/bootstrap-editable/bootstrap-editable.min.js"></script>
+
+<script type="text/javascript" src="/datatables/jquery.js"></script>
+<script type="text/javascript" src="/datatables/jquery.dataTables.js"></script>
+<script type="text/javascript"src="/datatables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/select2/select2.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+	$(document).ready(function() {
+
+			$.ajax({
+				url : '/_users/',
+				type : 'get',
+				contentType : 'application/json',
+				dataType : 'json',
+		        success : function(result) {
+
+					
+					if (result !== null && result !== 'undefined') {
+												
+						var dataSet = [];
+					
+						for (var i = 0; i < result.data.length; i++) {
+
+							dataSet.push(result.data[i]);							
+						}				
+						
+						
+					$('#table').dataTable({
+						"data" : dataSet,
+						"bPaginate": true,
+                        "bLengthChange": true,
+                        "bFilter": true,
+                        "bSort": true,
+                        "bInfo": true,
+                        "bAutoWidth": true,
+	                   	"lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+	                    "bStateSave": true,
+						"columns" :  [
+						             { 
+						            	 "title" : "Azonosító",
+										 "class" : "center",
+						            	 "data" : "user_id" 
+						             },
+						             { 
+						            	 "data" : "user_name",
+						            	 "class" : "center",
+						            	 "title" : "Felhasználónév"
+						            	 
+						             },
+						             {
+						            	 "data" : "user_email",
+						            	 "class" : "center",	
+						            	 "title" : "E-mail cím"
+						             },
+						             { 
+						            	 "data" : "device_id", 
+						            	 "class" : "center",
+						            	 "title" : "Device Id"
+						             },
+						             { 
+						            	 "data" : "role_id", 
+						            	 "class" : "center",
+						            	 "title" : "Role Id",
+						             },
+						             { 
+						            	 "data" : "user_given_name",
+						            	 "class" : "center",	 
+						            	 "title" : "Keresztnév"
+						             },
+						             {
+						            	 "data" : "user_sur_name",
+						            	 "class" : "center",
+						            	 "title" : "Vezetéknév"
+						             }
+						         ]
+						
+					});
+										
+			      }
+					
+				},
+				error : function(data) {
+					console.log('error!');
+					console.log(data);
+
+				}
+			});
+		});
+	</script>
+
+	<div>
+
+
+		<table id="table">
+		</table>
+	</div>
+
+
+</body>
+</html>
+

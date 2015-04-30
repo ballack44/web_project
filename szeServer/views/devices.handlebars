@@ -1,0 +1,185 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<title>{{title}}</title>
+
+<!-- the order is important! -->
+<link rel="stylesheet" type="text/css" href="/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css.map"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.min.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.css.map"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.theme.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.structure.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery.growl.css"/>
+
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables_themeroller.css"/>
+
+
+<script type="text/javascript" src="/jquery/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="/jquery.form/jquery.form.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrap.js"></script>
+<script type="text/javascript" src="/bootstrap-editable/bootstrap-editable.min.js"></script>
+
+<script type="text/javascript" src="/datatables/jquery.js"></script>
+<script type="text/javascript" src="/datatables/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/datatables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/select2/select2.js"></script>
+<script type="text/javascript" src="/jquery-ui.js"></script>
+<script type="text/javascript" src="/jquery.growl.js"></script>
+
+<style>
+a.btn {
+	
+    margin-right: 40pt;
+    text-align: center;
+	width: 50pt;
+}
+</style>
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+				
+		//import the data
+		$.ajax({
+			url : '/_devices/',
+			type : 'get',
+			contentType : 'application/json',
+			dataType : 'json',
+	        success : function(result) {
+
+				
+				if (result !== null && result !== 'undefined') {
+											
+					var dataSet = [];
+				
+					for (var i = 0; i < result.data.length; i++) {
+
+						console.log(result.data[i]);
+						dataSet.push(result.data[i]);							
+					}				
+					
+					
+				$('#table').dataTable({
+					"data" : dataSet,
+					"bPaginate": true,
+                    "bLengthChange": true,
+                    "bJQueryUI": true,
+                    "bFilter": true,
+                    "bSort": true,
+                    "bInfo": true,
+                    "bAutoWidth": true,
+                   	"lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    "bStateSave": true,
+                    "language" : {
+						"lengthMenu" : "_MENU_ sor mutatása oldalanként",
+						"zeroRecords" : "Nincs találat",
+						"info" : "_PAGE_ / _PAGES_ Sorok száma: _TOTAL_",
+						"infoEmpty" : "Nincs elérhető adattartalom",
+						"infoFiltered" : "(_MAX_ sorból szűkítve)",
+						"search" : "Keresés",
+						"paginate" : {
+							"next" : "Következő oldal",
+							"previous" : "Előző oldal"
+						}
+					},
+					"aoColumns" :  [
+					             { 
+					            	 "title" : "Eszközazonosító",
+									 "class" : "center",
+					            	 "data" : "device_id" 
+					             },
+					             { 
+					            	 "data" : "device_imei",
+					            	 "class" : "center",
+					            	 "title" : "IMEI"
+					            	 
+					             },
+					             {
+					            	 "data" : "sim_id",
+					            	 "class" : "center",	
+					            	 "title" : "SIM azonosító"
+					             },
+					             {
+									"bSortable": false,
+							      	"mRender": function(data, type, full) {
+							      		
+	    								return '<div class="col-md-6">'+'<a class="btn-primary btn btn-sm" href=/devices/'+ full.device_id + '>' + 'Módosít' + '</a>'+'</div>'
+	    								+ '<div class="col-md-6">'+'<a class="btn-danger btn btn-sm" href=/devices/delete/'+ full.device_id + '>' + 'Töröl' + '</a>'+'</div>';
+	  									
+	  								}
+						    	}			
+				          
+					         ]
+					
+				});
+									
+		      }
+				
+			},
+			error : function(data) {
+				console.log('error!');
+				console.log(data);
+
+			}
+		});
+	});
+</script>
+
+</head>
+<body bgcolor="#e5e4e4">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/index">Főablak <span class="sr-only">(current)</span></a></li>
+        <li  class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Felhasználók kezelése <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="/insertuser">Felhasználó hozzáadása</a></li>
+            <li class="active"><a href="/users">Felhasználók kezelése</a></li>
+          </ul>
+        </li>
+        <li class="active" class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Készülékek kezelése<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li ><a href="/insertdevice">Készülék hozzáadása</a></li>
+            <li class="active"><a href="/devices">Készülékek kezelése</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">SIM-ek kezelése<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li ><a href="/insertsim">SIM hozzáadása</a></li>
+            <li><a href="/sims">SIM-ek kezelése</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      	<li><a href="#">Üdvözöljük kedves {{userName}}!</a></li>
+        <li><a href="/logout">Kijelentkezés</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+	<div id="mainDiv">
+
+		<table id="table">
+		</table>
+	</div>
+
+
+</body>
+</html>
+

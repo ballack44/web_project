@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+
+<title>{{title}}</title>
+
+<!-- the order is important! -->
+<link rel="stylesheet" type="text/css" href="/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.css.map"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap-theme.min.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.css"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.css.map"/>
+<link rel="stylesheet" type="text/css" href="/bootstrap.min.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.theme.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery-ui.structure.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery.growl.css"/>
+
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables.css"/>
+<link rel="stylesheet" type="text/css" href="/jquery.dataTables_themeroller.css"/>
+
+
+<script type="text/javascript" src="/jquery/jquery-2.1.3.js"></script>
+<script type="text/javascript" src="/jquery.form/jquery.form.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="/bootstrap/bootstrap.js"></script>
+<script type="text/javascript" src="/bootstrap-editable/bootstrap-editable.min.js"></script>
+
+<script type="text/javascript" src="/datatables/jquery.js"></script>
+<script type="text/javascript" src="/datatables/jquery.dataTables.js"></script>
+<script type="text/javascript" src="/datatables/dataTables.tableTools.min.js"></script>
+<script type="text/javascript" src="/select2/select2.js"></script>
+<script type="text/javascript" src="/jquery-ui.js"></script>
+<script type="text/javascript" src="/jquery.growl.js"></script>
+
+<script type="text/javascript">
+
+
+$(document).ready(function() {
+	
+	
+	//import the user_data
+	$.ajax({
+		url : '/_users/',
+		type : 'get',
+		contentType : 'application/json',
+		dataType : 'json',
+        success : function(result) {
+			
+			$("#user_select").empty();
+
+			for(var i = 0; i <= result.data.length - 1; i++){
+				console.log(result.data[i].device_id);
+				if(result.data[i].device_id === null){
+				
+					//var option = document.createElement("option")
+						
+					//option.value = result.data[i].user_id
+					
+					//option.append(result.data[i].user_name)
+													
+					//$("#user_select").append(option);
+					
+					var option = document.createElement("option")
+					//option.label = result.data[i].user_name
+					option.text = result.data[i].user_name
+					option.value = result.data[i].user_id
+					console.log(option);
+					$("#user_select").append(option);
+				}
+			}
+			
+		},
+		error : function(data) {
+			console.log('error!');
+			console.log(data);
+
+		}
+	});
+	
+
+});
+
+
+function clickSave(){
+	var sUser = $( "#user_select option:selected" ).value();
+	var sDevice = $( "#device_select option:selected" ).value();
+	var sSim = $( "#sim_select option:selected" ).value();
+	
+	
+	var formData = {selected_user:sUser, selected_device:sDevice, selected_sim:sSim};
+	
+	$.ajax({
+			url : '/saveconfiguration',
+			type : 'post',
+			data : formData,
+	        success : function(result) {
+				
+				console.log(result)
+				
+			},
+			error : function(data) {
+				console.log('error!');
+				console.log(data);
+
+			}
+		});
+}
+
+function getAllDevice(){
+			//import the device_data
+		$.ajax({
+			url : '/_devices/',
+			type : 'get',
+			contentType : 'application/json',
+			dataType : 'json',
+	        success : function(result) {
+				
+				$("#device_select").empty();
+				console.log(result)
+				
+				for(var i = 0; i <= result.data.length - 1; i++){
+					if(result.data[i].sim_id === null){
+						var option = document.createElement("option")
+						
+						option.text = result.data[i].device_imei
+						option.value = result.data[i].device_id
+						
+						$("#device_select").append(option);
+						
+						//console.log(option);
+					}
+				}
+				
+			},
+			error : function(data) {
+				console.log('error!');
+				console.log(data);
+
+			}
+		});
+}
+
+function getAllSim(){
+	var used_sims = []
+	
+	//hasznalt_simek
+	$.ajax({
+			url : '/_devices/',
+			type : 'get',
+			contentType : 'application/json',
+			dataType : 'json',
+	        success : function(result) {
+				
+				
+				for(var i = 0; i <= result.data.length - 1; i++){
+					if(result.data[i].sim_id !== null){
+						used_sims.push(result.data[i].sim_id)
+						
+					}
+				}
+				
+			},
+			error : function(data) {
+				console.log('error!');
+				console.log(data);
+
+			}
+		});
+
+	//import the sim_data
+		$.ajax({
+			url : '/_sims/',
+			type : 'get',
+			contentType : 'application/json',
+			dataType : 'json',
+	        success : function(result) {
+				
+				$("#sim_select").empty();
+				console.log(result)
+				
+				for(var i = 0; i <= result.data.length - 1; i++){
+					var is_in = false
+					for(var j = 0; j <= used_sims.length - 1; j++){
+						if(result.data[i].sim_id === used_sims[j]){
+							is_in = true
+						}
+		
+					}	
+					if(!is_in){	
+						var option = document.createElement("option")
+						//option.label = result.data[i].sim_telefon_number
+						option.text = result.data[i].sim_telefon_number
+						option.value = result.data[i].sim_id
+								
+						$("#sim_select").append(option);
+					}
+								
+				}
+				
+			},
+			error : function(data) {
+				console.log('error!');
+				console.log(data);
+
+			}
+		});
+		
+}
+
+function deviceSelected(){
+	getAllSim()
+}
+
+function userSelected(){
+	getAllDevice()
+}
+</script>
+
+
+ <title>{{title}}</title>
+</head>
+<body bgcolor="#e5e4e4">
+
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/index">Főablak <span class="sr-only">(current)</span></a></li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Felhasználók kezelése <span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="/insertuser">Felhasználó hozzáadása</a></li>
+            <li><a href="/users">Felhasználók kezelése</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Készülékek kezelése<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li class="active"><a href="/insertdevice">Készülék hozzáadása</a></li>
+            <li><a href="/devices">Készülékek kezelése</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">SIM-ek kezelése<span class="caret"></span></a>
+          <ul class="dropdown-menu" role="menu">
+            <li ><a href="/insertsim">SIM hozzáadása</a></li>
+            <li><a href="/sims">SIM-ek kezelése</a></li>
+          </ul>
+        </li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      	<li><a href="#">Üdvözöljük kedves {{userName}}!</a></li>
+        <li><a href="/logout">Kijelentkezés</a></li>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+
+
+<form class="form-horizontal">
+  <fieldset >
+    <legend>Eszközök és SIM-ek kiosztása</legend>
+    <div>
+    <div class="col-md-2" class="form-group">
+	
+		<label for="user_select">Felhasználó:</label>
+		<select class="form-control"  class="user_select" id = "user_select" onClick ="userSelected()">
+			
+		</select>
+	</div>
+    
+    <div class="col-md-2" class="form-group">
+	
+		<label for="device_select">Eszköz:</label>
+		<select  class="form-control" class="device_select" id = "device_select" onClick = "deviceSelected()">
+			
+		</select>
+	</div>
+		
+	<div class="col-md-2" class="form-group">
+		<label for="sim_select">SIM:</label>
+		<select class="form-control" class="sim_select"  id = "sim_select" >
+
+		</select>
+	</div>	
+	</div>	
+ 
+ 	<div class="col-md-1>
+		<label for="save"></label>
+    	<button type="submit" class="btn btn-primary"   onClick="clickSave()" id="save">Mentés</button>
+  	</div>
+  </fieldset>
+
+</form>
+
+</body>
+</html>
